@@ -41,13 +41,6 @@ def read_app_names(appDataFile):
     appNames[hashtag3] = items[1]
     appNames['#' + hashtag3] = items[1]
     #TBD: should we create hashtags with punctuations
-    """
-    appNames['#app'] = "1111"
-    appNames['#games'] = "1111"
-    appNames['#ios'] = "1111"
-    appNames['#iosapp'] = "1111"
-    appNames['#iosgames'] = "1111"
-    """
   return appNames
 
 
@@ -95,7 +88,11 @@ def search_urls(urlDescs, appNames):
     return ''
   try:
     urlDescList = ast.literal_eval(urlDescs)
-  except (SyntaxError, ValueError):
+  except SyntaxError:
+    return ''
+  except ValueError:
+    return ''
+  if not type(urlDescList) == list:
     return ''
   for urlDesc in urlDescList:
     url = urlDesc['expanded_url']
@@ -108,17 +105,14 @@ def search_urls(urlDescs, appNames):
   
 def main():
   appNames = read_app_names("selected-apps.txt")
-  print appNames
   count = 0
   total = 0
   for line in sys.stdin:
-    print line
     total = total + 1
     items = line.strip().split('\t')
     if len(items) < 12:
       count = count + 1
       continue
-    print items
     _, body, rC, fC, l, urls, src, foC, aFC, frC, pT, ID = items
 
     # search body
