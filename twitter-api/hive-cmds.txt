@@ -1,0 +1,43 @@
+It is at s3://cs341-qv/tweet_parse.py.
+
+I have also attached it here. Also attached the selected-apps file.
+They are both in s3.
+
+The hive command is:
+
+CREATE EXTERNAL TABLE tweets_v2 (
+  tweet         STRING
+)
+LOCATION 's3://cs341-qv-data/Twitter_Firehose_v2';
+
+
+CREATE EXTERNAL TABLE fltd_twts_v2 (
+  appID          BIGINT,
+  body           STRING,
+  retweetCount   BIGINT,
+  favCount       BIGINT,
+  language       STRING,
+  urls           STRING,
+  creator        STRING,
+  followersCount BIGINT,
+  actorfavCount  BIGINT,
+  friendsCount   BIGINT,
+  postedTime     STRING,
+  id             STRING
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '\t'
+LOCATION 's3://cs341-qv-data/fltd_twts_v2';
+
+INSERT OVERWRITE TABLE fltd_twts_v2
+  MAP
+   tweets_v2.tweet
+  USING
+   's3://cs341-qv/tweet_parse.py' AS
+   appID, body, retweetCount, favCount, language,
+   urls, creator, followersCount, actorfavCount,
+   friendsCount, postedTime, id
+  FROM
+    tweets_v2;
+
+
